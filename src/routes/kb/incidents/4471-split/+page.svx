@@ -1,0 +1,74 @@
+---
+layout: runbook
+title: '#4471 · three problems, not one'
+owner: DrazekKD
+status: open
+reviewed: 2026-10-28
+signature: v1.eyJzdWIiOiIzNDgiLCJhdWQiOiJjaGFsbGVuZ2U6d2hhdC1pdC1zaG93cyIsImlhdCI6MTc5MzE5MDk1NCwiZXhwIjoxNzkzMjc3MzU0fQ.VZedhUHilxR2FdXfIllvDGgq1A2LJolxIl88tDwSSnM
+---
+
+<script>
+  import ProblemTable from '#lib/kb/ProblemTable.svelte';
+  import CauseTable from '#lib/kb/CauseTable.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+
+  const repo = 'https://github.com/DrazekKD/support-kb-4471/issues';
+  const tickets = { parser: `${repo}/1`, hint: `${repo}/2`, 'one-day': `${repo}/3` };
+</script>
+
+[#4471](/kb/incidents/4471) says it is one issue with one fix queued. It is not. The reports merged
+into it come from three different problems. One fix for the parser leaves two of them open.
+
+<Callout kind="warn">
+Do not close #4471 when the parser fix ships. Close each ticket below on its own.
+</Callout>
+
+## What #4471 holds
+
+<ProblemTable ticket={4471} {tickets} />
+
+The counts come from the export at render time. They are not typed here.
+
+## The three problems
+
+**`parser` — the shared parser reads dates month first.** Every tenant on file writes the day
+first. A date like 7 April comes out as 4 July. Most of the reports are this one. This is the fix
+that is queued.
+
+**`hint` — booking-v3 tells people to type the month first.** The booking-v3 form prints
+`MM/DD/YYYY` under its date field, so people type the month first. The form then reads the date
+the tenant's way, day first. The date flips before the parser sees it. Only reports that came in
+through the form of a booking-v3 tenant are this one. Fixing the parser does not fix it; the
+form's hint has to change.
+
+**`one-day` — the date moves by one day.** These reports are not a flipped month. The meeting is
+on the day before or after, the same month. Some reporters saw it only in June, or saw two
+different days in two cities for the same meeting. That points at time zones, not at the date
+format, but these few reports are not enough to be sure. The desk already marked them as a
+one-day move (`desk-notes.json`). Before this page they were counted under `parser`.
+
+## Why one ticket hid three
+
+- Reports were merged on **subject line only** ([decision 0001](/kb/decisions/0001-dedupe-by-subject)).
+  Every problem here uses the same words: "wrong day", "date is wrong". Matching subjects
+  cannot tell them apart.
+- `intakeTag` is a guess from the reporter's browser, not from the tenant. It disagrees with the
+  cause for many reports (see the table), so a tag is not proof of a cause.
+- The export pages overlap, so some reports appear twice. Each one is counted once here.
+
+## The same reports, by the desk's cause rules
+
+This is the existing view from `causes.ts`. It shows `parser` and `hint`, and footnotes the
+one-day reports under `parser`:
+
+<CauseTable ticket={4471} />
+
+## What to do
+
+1. Keep the parser fix on its ticket.
+2. Change the booking-v3 date hint to match the tenant's locale, on its own ticket.
+3. Look at time zones for the one-day reports, on their own ticket.
+4. Write a new decision that replaces 0001: subject alone is not enough to merge date reports.
+
+<RenderStamp {signature} />
