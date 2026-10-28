@@ -28,7 +28,9 @@ Do not close #4471 when the parser fix ships. Close each ticket below on its own
 
 <ProblemTable ticket={4471} {tickets} />
 
-The counts come from the export at render time. They are not typed here.
+The counts come from the export at render time. They are not typed here. They follow the desk's
+own view (`CauseTable`): a report is counted where it is filed. The one-day reports are filed under
+`parser`, so they are counted there and again as `one-day`.
 
 ## The three problems
 
@@ -46,7 +48,7 @@ form's hint has to change.
 on the day before or after, the same month. Some reporters saw it only in June, or saw two
 different days in two cities for the same meeting. That points at time zones, not at the date
 format, but these few reports are not enough to be sure. The desk already marked them as a
-one-day move (`desk-notes.json`). Before this page they were counted under `parser`.
+one-day move (`desk-notes.json`). They stay filed under `parser`, and now have their own ticket too.
 
 ## Why one ticket hid three
 

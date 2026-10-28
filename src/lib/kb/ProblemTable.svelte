@@ -34,7 +34,7 @@
     {#each split.groups as g (g.problem)}
       <tr>
         <td><code>{g.problem}</code></td>
-        <td><strong>{g.reports.length}</strong></td>
+        <td><strong>{g.reports.length}</strong>{#if g.shared}<span class="muted"> ({g.shared} also in another row)</span>{/if}</td>
         <td title={g.tenants.join(', ')}>{g.tenants.length}</td>
         <td class="muted">{channels(g.channels)}</td>
         <td>{g.mistagged}</td>
